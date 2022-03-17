@@ -1,9 +1,28 @@
 const express = require('express');
 const connectDB = require('./config/db');
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 
 const usersRoutes = require('./routes/api/users-routes');
 const authRoutes = require('./routes/api/auth-routes');
 const profileRoutes = require('./routes/api/profile-routes');
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Finder API',
+      version: '1.0.0',
+      description: 'API Library for Finder',
+    },
+    servers: [
+      {
+        url: 'http://localhost:5000',
+      },
+    ],
+    apis: ['./routes/api/*.js'],
+  },
+};
 
 const app = express();
 

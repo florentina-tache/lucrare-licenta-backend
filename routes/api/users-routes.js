@@ -6,7 +6,7 @@ const usersController = require('../../controllers/users-controllers');
 
 const User = require('../../models/user');
 
-// @route   POST api/users
+// @route   POST api/users/signup
 // @desc    Register user
 // @access  Public
 
