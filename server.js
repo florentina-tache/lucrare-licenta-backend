@@ -20,11 +20,15 @@ const options = {
         url: 'http://localhost:5000',
       },
     ],
-    apis: ['./routes/api/*.js'],
   },
+  apis: ['./routes/api/*.js'],
 };
 
+const specs = swaggerJsDoc(options);
+
 const app = express();
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 // Connection to the DataBase
 connectDB();
