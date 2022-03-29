@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 
 const HttpError = require('../models/http-error');
+const User = require('../models/User');
 
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
