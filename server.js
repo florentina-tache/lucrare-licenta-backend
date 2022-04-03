@@ -3,9 +3,10 @@ const connectDB = require('./config/db');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
-const usersRoutes = require('./routes/api/users-routes');
-const authRoutes = require('./routes/api/auth-routes');
-const profileRoutes = require('./routes/api/profile-routes');
+const usersRoutes = require('./routes/users-routes');
+const authRoutes = require('./routes/auth-routes');
+const profileRoutes = require('./routes/profile-routes');
+const placesRoutes = require('./routes/places-routes');
 
 const options = {
   definition: {
@@ -53,6 +54,7 @@ app.use(express.json({ extended: false }));
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/places', placesRoutes);
 
 app.use((error, req, res, next) => {
   if (res.headerSent) {

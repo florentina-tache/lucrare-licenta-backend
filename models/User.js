@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  places: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Place' }],
 });
 
-module.exports = User = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
