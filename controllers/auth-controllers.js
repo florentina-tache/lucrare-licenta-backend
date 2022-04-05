@@ -61,8 +61,9 @@ const signup = async (req, res, next) => {
 
   // Return jsonwebtoken
 
+  let userId = createdUser.id;
   const payload = {
-    userId: createdUser.id,
+    userId,
     email: createdUser.email,
   };
 
@@ -73,7 +74,7 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Signup failed, please try again later.', 500));
   }
 
-  res.status(201).json({ token });
+  res.status(201).json({ userId, token });
 };
 
 const login = async (req, res, next) => {
@@ -106,8 +107,9 @@ const login = async (req, res, next) => {
 
   // Return jsonwebtoken
 
+  let userId = existingUser.id;
   const payload = {
-    userId: existingUser.id,
+    userId,
     email: existingUser.email,
   };
 
@@ -118,7 +120,7 @@ const login = async (req, res, next) => {
     return next(new HttpError('Signup failed, please try again later.', 500));
   }
 
-  res.status(201).json({ token });
+  res.status(201).json({ userId, token });
 };
 
 exports.signup = signup;
