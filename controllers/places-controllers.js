@@ -29,7 +29,7 @@ const getRandomPlace = async (req, res, next) => {
   }
   //db.collection.deleteMany( { orderExpDate : {"$lt" : new Date(Date.now() - 7*24*60*60 * 1000) } })
 
-  res.status(200).json({ place: place });
+  res.status(200).json({ place: place[0] });
 };
 
 const getPlaceById = async (req, res, next) => {
