@@ -3,6 +3,7 @@ const router = express.Router();
 const { check } = require('express-validator');
 
 const auth = require('../middleware/auth');
+const fileUpload = require('../middleware/file-upload');
 
 const User = require('../models/User');
 const HttpError = require('../models/http-error');
@@ -29,6 +30,7 @@ router.get('/', auth, async (req, res, next) => {
 
 router.post(
   '/signup',
+  fileUpload.single('image'),
   [
     check('firstName', 'First Name is required').not().isEmpty(),
     check('lastName', 'Last Name is required').not().isEmpty(),

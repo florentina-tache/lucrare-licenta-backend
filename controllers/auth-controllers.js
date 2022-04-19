@@ -1,5 +1,4 @@
 const { validationResult } = require('express-validator');
-const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
@@ -27,14 +26,6 @@ const signup = async (req, res, next) => {
     return next(new HttpError('User already exists, please login.', 422));
   }
 
-  // Get gravatar
-
-  const avatar = gravatar.url(email, {
-    s: '200',
-    r: 'pg',
-    d: 'mm',
-  });
-
   // Encrypt Password
 
   let hashedPassword;
@@ -45,11 +36,13 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create user, please try again.', 500));
   }
 
+  let image = req.file?.path ? req.file.path : 'upload\\userDefault';
+
   const createdUser = new User({
     firstName,
     lastName,
     email,
-    avatar,
+    image,
     password: hashedPassword,
   });
 
@@ -65,6 +58,7 @@ const signup = async (req, res, next) => {
   const payload = {
     userId,
     email: createdUser.email,
+    image: createdUser.image,
   };
 
   let token;
@@ -111,6 +105,7 @@ const login = async (req, res, next) => {
   const payload = {
     userId,
     email: existingUser.email,
+    image: existingUser.image,
   };
 
   let token;
