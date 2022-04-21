@@ -11,7 +11,6 @@ const getRandomPlace = async (req, res, next) => {
   let place;
   try {
     place = await Place.aggregate([{ $sample: { size: 1 } }]);
-    console.log(place);
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not find a place.',
@@ -79,9 +78,9 @@ const getPlacesByUserId = async (req, res, next) => {
     );
   }
 
-  res.json({
+  res.status(200).json({
     places: userWithPlaces.places.map((place) =>
-      place.status(200).toObject({ getters: true })
+      place.toObject({ getters: true })
     ),
   });
 };
@@ -95,6 +94,7 @@ const createPlace = async (req, res, next) => {
   }
 
   const { title, description, address, creator } = req.body;
+  console.log(title, description, address, creator);
 
   let coordinates;
   //   try {
@@ -108,12 +108,12 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     // location: coordinates,
-    image:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
+    image: req.file.path,
     creator,
   });
 
   let user;
+  console.log(creator);
   try {
     user = await User.findById(creator);
   } catch (err) {
@@ -149,7 +149,6 @@ const createPlace = async (req, res, next) => {
 
 const updatePlace = async (req, res, next) => {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422)
@@ -162,7 +161,6 @@ const updatePlace = async (req, res, next) => {
   let place;
   try {
     place = await Place.findById(placeId);
-    console.log(place);
   } catch (err) {
     const error = new HttpError(
       'Something went wrong, could not update place.',
