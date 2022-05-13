@@ -25,7 +25,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  places: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Place' }],
+  addedPlaces: [
+    { type: mongoose.Types.ObjectId, required: true, ref: 'Place' },
+  ],
+  favouritePlaces: [
+    { type: mongoose.Types.ObjectId, required: true, ref: 'Place' },
+  ],
 });
 
 module.exports = mongoose.model('User', userSchema);

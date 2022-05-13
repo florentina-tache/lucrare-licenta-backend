@@ -14,10 +14,10 @@ router.get('/random', placesControllers.getRandomPlace);
 
 router.get('/:pid', placesControllers.getPlaceById);
 
-router.get('/user/:uid', placesControllers.getPlacesByUserId);
+router.get('/user/:type/:uid', placesControllers.getPlacesByUserId);
 
 router.post(
-  '/',
+  '/:type',
   fileUpload.single('image'),
   [
     check('title').not().isEmpty(),

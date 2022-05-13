@@ -58,11 +58,16 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
+  let placeType;
+  if (req.params.type === 'added') {
+    placeType = 'addedPlaces';
+  } else if (req.params.type === 'favourites') {
+    placeType = 'favouritePlaces';
+  }
 
-  // let places;
   let userWithPlaces;
   try {
-    userWithPlaces = await User.findById(userId).populate('places');
+    userWithPlaces = await User.findById(userId).populate(placeType);
   } catch (err) {
     const error = new HttpError(
       'Fetching places failed, please try again later.',
@@ -71,21 +76,26 @@ const getPlacesByUserId = async (req, res, next) => {
     return next(error);
   }
 
-  // if (!places || places.length === 0) {
-  if (!userWithPlaces || userWithPlaces.places.length === 0) {
+  if (!userWithPlaces || userWithPlaces[placeType].length === 0) {
     return next(
       new HttpError('Could not find places for the provided user id.', 404)
     );
   }
 
   res.status(200).json({
-    places: userWithPlaces.places.map((place) =>
+    places: userWithPlaces[placeType].map((place) =>
       place.toObject({ getters: true })
     ),
   });
 };
 
 const createPlace = async (req, res, next) => {
+  let placeType;
+  if (req.params.type === 'added') {
+    placeType = 'addedPlaces';
+  } else if (req.params.type === 'favourites') {
+    placeType = 'favouritePlaces';
+  }
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -93,22 +103,21 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, address, creator } = req.body;
-  console.log(title, description, address, creator);
+  const { title, description, address, creator, image } = req.body;
 
   let coordinates;
-  //   try {
-  //     coordinates = await getCoordsForAddress(address);
-  //   } catch (error) {
-  //     return next(error);
-  //   }
+  try {
+    coordinates = await getCoordsForAddress(address);
+  } catch (error) {
+    return next(error);
+  }
 
   const createdPlace = new Place({
     title,
     description,
     address,
-    // location: coordinates,
-    image: req.file.path,
+    location: coordinates,
+    image: req.file?.path || image,
     creator,
   });
 
@@ -133,7 +142,7 @@ const createPlace = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdPlace.save({ session: sess });
-    user.places.push(createdPlace);
+    user[placeType].push(createdPlace);
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
@@ -155,7 +164,7 @@ const updatePlace = async (req, res, next) => {
     );
   }
 
-  const { title, description } = req.body;
+  const { title, description, address } = req.body;
   const placeId = req.params.pid;
 
   let place;
@@ -176,6 +185,7 @@ const updatePlace = async (req, res, next) => {
 
   place.title = title;
   place.description = description;
+  place.address = address;
 
   try {
     await place.save();
@@ -223,7 +233,7 @@ const deletePlace = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await place.remove({ session: sess });
-    place.creator.places.pull(place);
+    place.creator.addedPlaces.pull(place);
     await place.creator.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
