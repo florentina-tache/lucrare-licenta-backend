@@ -8,4 +8,6 @@ const router = express.Router();
 
 router.get('/', usersController.getUsers);
 
+router.patch('/places', usersController.updatePlaceToNotDisplay);
+
 module.exports = router;

@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
-// const getCoordsForAddress = require('../util/location');
+const getCoordsForAddress = require('../util/location');
 const Place = require('../models/Place');
 const User = require('../models/User');
 
@@ -96,6 +96,7 @@ const createPlace = async (req, res, next) => {
   } else if (req.params.type === 'favourites') {
     placeType = 'favouritePlaces';
   }
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -112,17 +113,31 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
+  var today = new Date();
+  var nextweek = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 7
+  );
+
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
-    image: req.file?.path || image,
+    image:
+      req.file?.path ||
+      image ||
+      'uploads\\1a59b73c-286e-488e-9f26-ee7aba124dd6.png',
     creator,
   });
 
+  const placeNotToDisplay = {
+    placeDetails: { ...createdPlace },
+    expirationDate: null,
+  };
+
   let user;
-  console.log(creator);
   try {
     user = await User.findById(creator);
   } catch (err) {
@@ -143,9 +158,11 @@ const createPlace = async (req, res, next) => {
     sess.startTransaction();
     await createdPlace.save({ session: sess });
     user[placeType].push(createdPlace);
+    user.placesNotToDisplay.push(placeNotToDisplay);
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       'Creating place failed, please try again.',
       500
