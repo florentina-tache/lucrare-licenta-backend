@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
 const getCoordsForAddress = require('../util/location');
+const addImageToS3 = require('../util/aws');
+const detectLabel = require('../util/detectLabel');
 const Place = require('../models/Place');
 const User = require('../models/User');
 
@@ -89,6 +91,32 @@ const getPlacesByUserId = async (req, res, next) => {
   });
 };
 
+const getPlacesByTag = async (req, res, next) => {
+  const { tag } = req.body;
+
+  console.log('tag', req.body);
+
+  let places;
+  try {
+    places = await Place.find({ tags: tag });
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a place.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!places) {
+    const error = new HttpError('Could not find any place.', 404);
+    return next(error);
+  }
+
+  res
+    .status(200)
+    .json({ places: places.map((place) => place.toObject({ getters: true })) });
+};
+
 const createPlace = async (req, res, next) => {
   let placeType;
   if (req.params.type === 'added') {
@@ -113,12 +141,11 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
-  var today = new Date();
-  var nextweek = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate() + 7
-  );
+  let tagsList;
+  if (placeType === 'addedPlaces') {
+    await addImageToS3(req.file);
+    tagsList = await detectLabel(req.file.filename);
+  }
 
   const createdPlace = new Place({
     title,
@@ -130,6 +157,7 @@ const createPlace = async (req, res, next) => {
       image ||
       'uploads\\1a59b73c-286e-488e-9f26-ee7aba124dd6.png',
     creator,
+    tags: tagsList,
   });
 
   const placeNotToDisplay = {
@@ -274,3 +302,4 @@ exports.getPlacesByUserId = getPlacesByUserId;
 exports.createPlace = createPlace;
 exports.updatePlace = updatePlace;
 exports.deletePlace = deletePlace;
+exports.getPlacesByTag = getPlacesByTag;

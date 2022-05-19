@@ -14,6 +14,7 @@ const placeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  tags: [String],
 });
 
 module.exports = Place = mongoose.model('Place', placeSchema);

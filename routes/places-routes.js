@@ -16,6 +16,8 @@ router.get('/:pid', placesControllers.getPlaceById);
 
 router.get('/user/:type/:uid', placesControllers.getPlacesByUserId);
 
+router.post('/search', placesControllers.getPlacesByTag);
+
 router.post(
   '/:type',
   fileUpload.single('image'),
