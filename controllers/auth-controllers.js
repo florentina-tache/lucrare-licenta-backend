@@ -57,6 +57,7 @@ const signup = async (req, res, next) => {
   let userId = createdUser.id;
   const payload = {
     userId,
+    role: 'user', 
     email: createdUser.email,
     image: createdUser.image,
   };
@@ -104,6 +105,7 @@ const login = async (req, res, next) => {
   let userId = existingUser.id;
   const payload = {
     userId,
+    role: existingUser.role, 
     email: existingUser.email,
     image: existingUser.image,
   };
