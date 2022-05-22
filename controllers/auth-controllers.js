@@ -36,13 +36,15 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Could not create user, please try again.', 500));
   }
 
-  let image = req.file?.path ? req.file.path : 'upload\\userDefault';
+  let image = req.file?.path ? req.file.path : 'uploads/userDefault.png';
+  let role = 'user'
 
   const createdUser = new User({
     firstName,
     lastName,
     email,
     image,
+    role,
     password: hashedPassword,
   });
 
@@ -57,7 +59,7 @@ const signup = async (req, res, next) => {
   let userId = createdUser.id;
   const payload = {
     userId,
-    role: 'user', 
+    role,
     email: createdUser.email,
     image: createdUser.image,
   };

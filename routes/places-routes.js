@@ -12,11 +12,14 @@ const router = express.Router();
 
 router.get('/random', placesControllers.getRandomPlace);
 
+router.get('/latest', placesControllers.getLatestPlaces);
+
 router.get('/:pid', placesControllers.getPlaceById);
 
 router.get('/user/:type/:uid', placesControllers.getPlacesByUserId);
 
 router.post('/search', placesControllers.getPlacesByTag);
+
 
 router.post(
   '/:type',

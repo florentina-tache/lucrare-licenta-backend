@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const placeSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -9,12 +9,13 @@ const placeSchema = new mongoose.Schema({
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
   },
-  creator: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+  creator: { type: mongoose.Types.ObjectId, required: true, ref: "User" },
   date: {
     type: Date,
     default: Date.now,
   },
   tags: [String],
+  // likes: { type: Number, default: 0 },
 });
 
-module.exports = Place = mongoose.model('Place', placeSchema);
+module.exports = Place = mongoose.model("Place", placeSchema);

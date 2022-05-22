@@ -94,8 +94,6 @@ const getPlacesByUserId = async (req, res, next) => {
 const getPlacesByTag = async (req, res, next) => {
   const { tag } = req.body;
 
-  console.log('tag', req.body);
-
   let places;
   try {
     places = await Place.find({ tags: tag });
@@ -114,7 +112,32 @@ const getPlacesByTag = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ places: places.map((place) => place.toObject({ getters: true })) });
+    .json({ places: places});
+};
+
+const getLatestPlaces = async (req, res, next) => {
+  console.log("!!!")
+  let places;
+  try {
+    console.log("!")
+    places = await Place.find().sort({$natural: -1 }).limit(3)
+    console.log("?")
+  } catch (err) {
+    const error = new HttpError(
+      'Something went wrong, could not find a place.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!places) {
+    const error = new HttpError('Could not find any place.', 404);
+    return next(error);
+  }
+
+  res
+    .status(200)
+    .json({ places: places});
 };
 
 const createPlace = async (req, res, next) => {
@@ -142,10 +165,10 @@ const createPlace = async (req, res, next) => {
   }
 
   let tagsList;
-  if (placeType === 'addedPlaces') {
-    await addImageToS3(req.file);
-    tagsList = await detectLabel(req.file.filename);
-  }
+  // if (placeType === 'addedPlaces') {
+  //   await addImageToS3(req.file);
+  //   tagsList = await detectLabel(req.file.filename);
+  // }
 
   const createdPlace = new Place({
     title,
@@ -299,6 +322,7 @@ const deletePlace = async (req, res, next) => {
 exports.getRandomPlace = getRandomPlace;
 exports.getPlaceById = getPlaceById;
 exports.getPlacesByUserId = getPlacesByUserId;
+exports.getLatestPlaces = getLatestPlaces;
 exports.createPlace = createPlace;
 exports.updatePlace = updatePlace;
 exports.deletePlace = deletePlace;
