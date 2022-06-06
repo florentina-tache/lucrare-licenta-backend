@@ -8,18 +8,19 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-// router.use(auth);
+router.use(auth);
 
-router.get('/random', placesControllers.getRandomPlace);
+router.get('/random/:uid/:pid', placesControllers.getRandomPlace);
 
 router.get('/latest', placesControllers.getLatestPlaces);
+
+router.get('/liked', placesControllers.getMostLikedPlaces);
 
 router.get('/:pid', placesControllers.getPlaceById);
 
 router.get('/user/:type/:uid', placesControllers.getPlacesByUserId);
 
 router.post('/search', placesControllers.getPlacesByTag);
-
 
 router.post(
   '/:type',

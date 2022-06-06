@@ -48,7 +48,7 @@ const detectLabel = async (image) => {
 
   const tagsList = result.Labels.map((a) => a.Name.toLowerCase());
   return tagsList;
-  
+
 };
 
 module.exports = detectLabel;
