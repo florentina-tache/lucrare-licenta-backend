@@ -103,21 +103,11 @@ const getRandomPlace = async (req, res, next) => {
   let place;
   let shouldNotDisplay;
   do {
-    // console.log("!!")
     place = await generatePlace();
     shouldNotDisplay = user.placesNotToDisplay.find((p) => {
       return p.placeDetails.toString() === place[0]._id.toString()
     })
   } while (shouldNotDisplay);
-  // if (!place) {
-  //   const error = new HttpError(
-  //     'Could not find place for the provided id.',
-  //     404
-  //   );
-  //   return next(error);
-  // }
-  //db.collection.deleteMany( { orderExpDate : {"$lt" : new Date(Date.now() - 7*24*60*60 * 1000) } })
-  // console.log("200", place[0])
   res.status(200).json({ place: place[0] });
 };
 
