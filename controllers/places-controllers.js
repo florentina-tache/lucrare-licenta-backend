@@ -299,7 +299,6 @@ const createPlace = async (req, res, next) => {
   let place;
   if (placeType === 'favouritePlaces') {
     const alreadyInFavourites = user.placesNotToDisplay.find((p) => {
-      // console.log(p.placeDetails.toString() === placeId, p.placeDetails.toString(), placeId)
       return p.placeDetails.toString() === placeId
     })
     if (alreadyInFavourites) {

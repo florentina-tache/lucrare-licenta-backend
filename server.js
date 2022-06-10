@@ -9,6 +9,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const usersRoutes = require('./routes/users-routes');
 const authRoutes = require('./routes/auth-routes');
 const placesRoutes = require('./routes/places-routes');
+const statusRouter = require('./routes/status-routes');
 
 const options = {
   definition: {
@@ -55,6 +56,7 @@ app.use((req, res, next) => {
 app.use(express.json({ extended: false }));
 
 // Define the Routes
+app.use("/api/status", statusRouter);
 app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/places', placesRoutes);
